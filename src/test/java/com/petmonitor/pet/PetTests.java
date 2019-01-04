@@ -1,4 +1,4 @@
-package test.java.com.petmonitor.pet;
+package com.petmonitor.pet;
 
 
 public class PetTests {
