@@ -9,7 +9,7 @@ public interface Dao<T> {
 
     Collection<T> getAll();
 
-    T save(T t);
+    T save(T t) ;
 
     void update(T t);
 

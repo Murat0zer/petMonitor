@@ -1,19 +1,20 @@
 package com.petmonitor.pet.model;
 
-import com.petmonitor.owner.model.Owner;
+import com.petmonitor.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-public class Pet {
+public class Pet implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,7 +27,7 @@ public class Pet {
     private String description;
 
     @ManyToOne
-    private Owner owner;
+    private User user;
 
 
 }
