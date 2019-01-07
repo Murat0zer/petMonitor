@@ -10,6 +10,7 @@ import com.petmonitor.user.model.UserDTO;
 import com.petmonitor.user.repository.RoleDAOImpl;
 import com.petmonitor.user.repository.UserDAOImpl;
 import com.petmonitor.user.service.UserService;
+import com.petmonitor.util.GeneralDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.Before;
@@ -193,7 +194,8 @@ public class UserTests {
         userDAO.save(user);
         long id = user.getId();
 
-        userDAO.delete(userDAO.get(id).orElseThrow(RuntimeException::new));
+        GeneralDAO generalDAO = new GeneralDAO();
+        userDAO.delete(generalDAO.get(id, User.class).orElseThrow(RuntimeException::new));
         UserController userController = new UserController(new UserService());
         userController.findUserById(id);
 
