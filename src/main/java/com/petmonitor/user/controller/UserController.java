@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Named("userController")
@@ -46,7 +47,7 @@ public class UserController implements Serializable {
                 .surname(userDTO.getSurname())
                 .password(userDTO.getPassword())
                 .contactInformation(new ContactInformation(userDTO.getPhoneNumber(), userDTO.getEmail()))
-                .pets(new ArrayList<>())
+                .pets(new HashSet<>())
                 .build();
         userService.save(user);
 

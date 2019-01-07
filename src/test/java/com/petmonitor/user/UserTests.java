@@ -7,10 +7,9 @@ import com.petmonitor.user.model.ContactInformation;
 import com.petmonitor.user.model.Role;
 import com.petmonitor.user.model.User;
 import com.petmonitor.user.model.UserDTO;
-import com.petmonitor.user.repository.RoleDAOImpl;
-import com.petmonitor.user.repository.UserDAOImpl;
+import com.petmonitor.user.repository.RoleDAO;
+import com.petmonitor.user.repository.UserDAO;
 import com.petmonitor.user.service.UserService;
-import com.petmonitor.util.GeneralDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.Before;
@@ -38,12 +37,12 @@ public class UserTests {
 
     private UserDTO userDTO;
 
-    private UserDAOImpl userDAO = new UserDAOImpl();
+    private UserDAO userDAO = new UserDAO();
 
     @BeforeClass
     public static void setUp() {
 
-        RoleDAOImpl roleDAO = new RoleDAOImpl();
+        RoleDAO roleDAO = new RoleDAO();
 
         roleDAO.save(Role.OWNER);
         roleDAO.save(Role.ADMIN);
@@ -73,7 +72,7 @@ public class UserTests {
                 .surname("surname")
                 .phoneNumber("53210")
                 .email("a@bc.com")
-                .pets(new ArrayList<>())
+                .pets(new HashSet<>())
                 .build();
 
         user = User.builder()
@@ -178,7 +177,7 @@ public class UserTests {
         long id = user.getId();
         User persistedUser = userController.findUserById(id);
 
-        assertEquals(persistedUser, user);
+        assertEquals(persistedUser.hashCode(), user.hashCode());
 
         userDAO.delete(persistedUser);
     }
@@ -194,8 +193,8 @@ public class UserTests {
         userDAO.save(user);
         long id = user.getId();
 
-        GeneralDAO generalDAO = new GeneralDAO();
-        userDAO.delete(generalDAO.get(id, User.class).orElseThrow(RuntimeException::new));
+
+        userDAO.delete(userDAO.get(id).orElseThrow(RuntimeException::new));
         UserController userController = new UserController(new UserService());
         userController.findUserById(id);
 
@@ -212,7 +211,7 @@ public class UserTests {
                     .contactInformation(new ContactInformation("12345", "abc@b.com"))
                     .name("name")
                     .password("password")
-                    .pets(new ArrayList<>())
+                    .pets(new HashSet<>())
                     .surname("surname")
                     .username("username" + i)
                     .build();
@@ -233,7 +232,7 @@ public class UserTests {
                 .contactInformation(new ContactInformation("12345", "abc@b.com"))
                 .name("name")
                 .password("password")
-                .pets(new ArrayList<>())
+                .pets(new HashSet<>())
                 .surname("surname")
                 .username("username")
                 .build();

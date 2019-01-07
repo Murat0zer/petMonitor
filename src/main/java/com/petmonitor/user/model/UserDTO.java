@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -36,6 +37,6 @@ public class UserDTO implements Serializable {
     @NotBlank(message = "{user.password.length}")
     private String password;
 
-    private List<Pet> pets;
+    private Set<Pet> pets;
 
 }

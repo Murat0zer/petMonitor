@@ -5,11 +5,11 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,5 +32,34 @@ public class Pet implements Serializable {
     private User user;
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pet)) return false;
+        Pet pet = (Pet) o;
+        return getId() == pet.getId() &&
+                getAge() == pet.getAge() &&
+                getSpecies().equals(pet.getSpecies()) &&
+                getBreed().equals(pet.getBreed()) &&
+                getName().equals(pet.getName()) &&
+                getDescription().equals(pet.getDescription());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getSpecies(), getBreed(), getName(), getAge(), getDescription());
+    }
+
+
+    @Override
+    public String toString() {
+        return "Pet{" +
+                "id=" + id +
+                ", species='" + species + '\'' +
+                ", breed='" + breed + '\'' +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

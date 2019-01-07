@@ -10,14 +10,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -45,8 +40,9 @@ public class User implements UserDetails, Serializable {
     @Embedded
     private ContactInformation contactInformation;
 
+    @Builder.Default
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
-    private List<Pet> pets = new ArrayList<>();
+    private Set<Pet> pets = new HashSet<>();
 
     @NotBlank
     @Size(min = 6)
@@ -110,9 +106,9 @@ public class User implements UserDetails, Serializable {
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", username='" + username + '\'' +
-                ", contactInformation=" + contactInformation +
+                ", contactInformation=" + contactInformation.toString() +
                 ", password='" + password + '\'' +
-                ", roles=" + roles +
+                ", roles=" + roles.toString() +
                 ", enabled=" + enabled +
                 '}';
     }

@@ -3,7 +3,7 @@ package com.petmonitor.user.service;
 import com.petmonitor.pet.model.Pet;
 import com.petmonitor.user.model.Role;
 import com.petmonitor.user.model.User;
-import com.petmonitor.user.repository.UserDAOImpl;
+import com.petmonitor.user.repository.UserDAO;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,7 +22,7 @@ import java.util.Set;
 @Named(value = "userService")
 public class UserService implements UserDetailsService {
 
-    private UserDAOImpl userDAO;
+    private UserDAO userDAO;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -30,7 +30,7 @@ public class UserService implements UserDetailsService {
     private Validator validator = factory.getValidator();
 
     public UserService() {
-        userDAO = new UserDAOImpl();
+        userDAO = new UserDAO();
     }
 
     public User save(User user) {
@@ -46,7 +46,7 @@ public class UserService implements UserDetailsService {
         roles.add((Role.OWNER));
 
         user.setRoles(roles);
-        return userDAO.save(user);
+        return userDAO.save(user).orElseThrow(RuntimeException::new);
     }
 
     public void delete(User user) {
@@ -54,7 +54,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         Optional<User> userOptional = userDAO.findByUsername(username);
         return userOptional.orElseThrow(() -> new UsernameNotFoundException("user not found by '" + username));
     }

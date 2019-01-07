@@ -1,5 +1,6 @@
 package com.petmonitor.user.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -7,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import javax.persistence.*;
 import java.io.Serializable;
 
+@EqualsAndHashCode
 @Getter
 @Entity(name = "Role")
 @Table(name = "role")
@@ -21,7 +23,7 @@ public class Role implements GrantedAuthority, Serializable {
     @Column(unique = true)
     private RoleName roleName;
 
-    public Role(RoleName roleName) {
+    private Role(RoleName roleName) {
         this.roleName = roleName;
     }
 
