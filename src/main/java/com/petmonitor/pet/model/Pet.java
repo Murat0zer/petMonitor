@@ -1,19 +1,20 @@
 package com.petmonitor.pet.model;
 
 import com.petmonitor.user.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Data
+
+@Getter
+@Setter
+@EqualsAndHashCode
+@RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
-@Entity
+@Entity(name = "Pet")
+@Table(name = "pet")
 public class Pet implements Serializable {
 
     @Id
@@ -26,8 +27,10 @@ public class Pet implements Serializable {
     private int age;
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
+
 
 
 }

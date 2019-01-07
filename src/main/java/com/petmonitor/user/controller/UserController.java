@@ -1,65 +1,51 @@
 package com.petmonitor.user.controller;
 
 
-import com.petmonitor.pet.model.Pet;
 import com.petmonitor.user.model.ContactInformation;
 import com.petmonitor.user.model.User;
+import com.petmonitor.user.model.UserDTO;
 import com.petmonitor.user.service.UserService;
-import com.sun.el.MethodExpressionLiteral;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.format.annotation.NumberFormat;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.el.MethodExpression;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.NavigationHandler;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.persistence.Column;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
-@ManagedBean
+@Named("userController")
 @SessionScoped
 @Getter
 @Setter
-public class UserController {
+@NoArgsConstructor
+public class UserController implements Serializable {
 
-    @NotBlank(message = "Name can not be blank !")
-    private String name;
+    UserDTO userDTO;
 
-    @NotBlank
-    private String surname;
+    UserService userService;
 
-    @Size(min = 3)
-    @NotBlank
-    private String username;
-
-    @NumberFormat
-    private String phoneNumber;
-
-    @Email
-    private String email;
-
-    @Length(min = 6, max = 20)
-    private String password;
-
+    @Inject
+    public UserController(UserService userService) {
+        this.userService = userService;
+        this.userDTO = UserDTO.builder().build();
+    }
 
     public void addOwner() {
 
-        UserService userService = new UserService();
         User user = User.builder()
-                .username(username)
-                .name(name)
-                .surname(surname)
-                .password(password)
-                .contactInformation(new ContactInformation(phoneNumber, email))
+                .username(userDTO.getUsername())
+                .name(userDTO.getName())
+                .surname(userDTO.getSurname())
+                .password(userDTO.getPassword())
+                .contactInformation(new ContactInformation(userDTO.getPhoneNumber(), userDTO.getEmail()))
                 .pets(new ArrayList<>())
                 .build();
         userService.save(user);
@@ -70,13 +56,27 @@ public class UserController {
         fc.renderResponse();
     }
 
+
     public String redirectUrlIfUserAuthenticated() {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if( ! (authentication  instanceof AnonymousAuthenticationToken)){
+        if (!(authentication instanceof AnonymousAuthenticationToken)) {
             return "welcome.xhtml";
         }
         return "";
+    }
+
+    public User findUserById(long id) {
+
+        return userService.findUserById(id);
+    }
+
+    public List<User> getAll() {
+        return userService.getAll();
+    }
+
+    public void updateUser() {
+
     }
 }

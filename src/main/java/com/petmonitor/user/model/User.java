@@ -1,46 +1,55 @@
 package com.petmonitor.user.model;
 
 import com.petmonitor.pet.model.Pet;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.persistence.*;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-@ManagedBean
-@SessionScoped
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
+@Entity(name = "User")
+@Table(name = "user")
 public class User implements UserDetails, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @NotBlank
     private String name;
 
+    @NotBlank
     private String surname;
 
+
     @Column(unique = true)
+    @Size(min = 3)
+    @NotBlank
     private String username;
 
+    @Valid
+    @Embedded
     private ContactInformation contactInformation;
 
-    @OneToMany
-    private List<Pet> pets;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
+    private List<Pet> pets = new ArrayList<>();
 
+    @NotBlank
+    @Size(min = 6)
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -83,4 +92,29 @@ public class User implements UserDetails, Serializable {
     public boolean isEnabled() {
         return enabled;
     }
+
+    public void addPet(Pet pet) {
+        pets.add(pet);
+        pet.setUser(this);
+    }
+
+    public void removePet(Pet pet) {
+        pets.remove(pet);
+        pet.setUser(null);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", username='" + username + '\'' +
+                ", contactInformation=" + contactInformation +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                ", enabled=" + enabled +
+                '}';
+    }
+
 }

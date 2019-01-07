@@ -20,7 +20,7 @@ public class RoleDAOImpl implements Dao<Role> {
     }
 
     @Override
-    public Optional<Role> get(int id) {
+    public Optional<Role> get(long id) {
         return Optional.empty();
     }
 

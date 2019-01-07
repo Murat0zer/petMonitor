@@ -8,7 +8,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Getter
-@Entity
+@Entity(name = "Role")
+@Table(name = "role")
 @NoArgsConstructor
 public class Role implements GrantedAuthority, Serializable {
 
