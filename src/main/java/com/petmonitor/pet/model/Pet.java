@@ -31,7 +31,6 @@ public class Pet implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

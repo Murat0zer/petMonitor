@@ -4,6 +4,9 @@ import com.petmonitor.pet.model.Pet;
 import com.petmonitor.user.model.Role;
 import com.petmonitor.user.model.User;
 import com.petmonitor.user.repository.UserDAO;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import javax.validation.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +24,7 @@ import java.util.Set;
 
 @ApplicationScoped
 @Named(value = "userService")
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService, Serializable {
 
     private UserDAO userDAO;
 
@@ -74,5 +78,33 @@ public class UserService implements UserDetailsService {
 
     public List<Pet> getOwnerPets(long id) {
         return userDAO.getOwnerPets(id);
+    }
+
+    public void removePet(Pet pet) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User user = userDAO.findByUsername(authentication.getPrincipal().toString())
+                .orElseThrow(RuntimeException::new);
+        if(authentication.getAuthorities().contains(Role.ADMIN) || user.getId() == pet.getUser().getId()) {
+            user.removePet(pet);
+            userDAO.save(user);
+        }
+        else  {
+            throw new AccessDeniedException("You have no authorize to do this");
+        }
+    }
+
+    public void addPet(Pet pet) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User user = userDAO.findByUsername(authentication.getPrincipal().toString())
+                .orElseThrow(RuntimeException::new);
+        if(authentication.getAuthorities().contains(Role.ADMIN) || user.getId() == pet.getUser().getId()) {
+            user.addPet(pet);
+            userDAO.save(user);
+        }
+        else  {
+            throw new AccessDeniedException("You have no authorize to do this");
+        }
     }
 }

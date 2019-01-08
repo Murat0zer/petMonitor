@@ -1,6 +1,7 @@
 package com.petmonitor.user;
 
 
+import com.petmonitor.pet.PetService;
 import com.petmonitor.pet.model.Pet;
 import com.petmonitor.user.controller.UserController;
 import com.petmonitor.user.model.ContactInformation;
@@ -15,13 +16,19 @@ import org.hamcrest.collection.IsEmptyCollection;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.NoResultException;
 import javax.validation.*;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.*;
@@ -32,11 +39,9 @@ public class UserTests {
     private static Validator validator;
 
     private static Properties properties = new Properties();
-
+    private static UserController userController = new UserController(new UserService(), new PetService());
     private User user;
-
     private UserDTO userDTO;
-
     private UserDAO userDAO = new UserDAO();
 
     @BeforeClass
@@ -85,11 +90,11 @@ public class UserTests {
                 .build();
 
         int petCount = 5;
-        for (int i =0; i<petCount; i++){
+        for (int i = 0; i < petCount; i++) {
             Pet pet = Pet.builder()
                     .name("pet name" + i)
-                    .species("species" +i)
-                    .breed("breed" +i)
+                    .species("species" + i)
+                    .breed("breed" + i)
                     .age(1 + i)
                     .description("description" + i)
                     .build();
@@ -171,7 +176,6 @@ public class UserTests {
 
     @Test
     public void findOwnerById() {
-        UserController userController = new UserController(new UserService());
 
         userController.getUserService().save(user);
         long id = user.getId();
@@ -184,7 +188,6 @@ public class UserTests {
 
     @Test(expected = NoResultException.class)
     public void findOwner_DoesntExists() {
-        UserController userController = new UserController(new UserService());
         userController.findUserById(123L);
     }
 
@@ -195,7 +198,6 @@ public class UserTests {
 
 
         userDAO.delete(userDAO.get(id).orElseThrow(RuntimeException::new));
-        UserController userController = new UserController(new UserService());
         userController.findUserById(id);
 
     }
@@ -204,7 +206,6 @@ public class UserTests {
     public void getAllOwners() {
 
         int expectedUserCount = 5;
-        UserController userController = new UserController(new UserService());
         User newUser;
         for (int i = 0; i < expectedUserCount; i++) {
             newUser = User.builder()
@@ -262,6 +263,54 @@ public class UserTests {
         assertEquals(petCount, pets.size());
         userDAO.delete(user);
     }
+
+    @Test
+    public void ownerCreatePet() {
+        int petCount = user.getPets().size();
+        Pet pet = Pet.builder()
+                .name("pet name" + petCount)
+                .species("species" + petCount)
+                .breed("breed" + petCount)
+                .age(1 + petCount)
+                .description("description" + petCount)
+                .build();
+        user.addPet(pet);
+        userDAO.save(user);
+        List<Pet> pets = userDAO.getOwnerPets(user.getId());
+        assertEquals(petCount + 1, pets.size());
+    }
+
+    @Test
+    public void removePetFromOwner() {
+        int petCount = user.getPets().size();
+        user.removePet(user.getPets().iterator().next());
+        userDAO.save(user);
+        List<Pet> pets = userDAO.getOwnerPets(user.getId());
+        assertEquals(petCount - 1, pets.size());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void removeNotOwnedPet() {
+
+        this.authentication();
+        userController.removePet(user.getPets().iterator().next());
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void addPetToOwner() {
+        this.authentication();
+        Pet pet = Pet.builder()
+                .name("pet name")
+                .species("species")
+                .breed("breed")
+                .age(1)
+                .description("description")
+                .build();
+        user.addPet(pet);
+        userController.addPet(pet);
+
+    }
+
     private void checkValidationMessage(String expectedMessage) {
 
         Set<ConstraintViolation<UserDTO>> constraintViolations = validator.validate(userDTO);
@@ -270,11 +319,31 @@ public class UserTests {
         assertEquals(expectedMessage, message);
         assertThat(constraintViolations, hasSize(1));
 
-        UserController userController = new UserController(new UserService());
-
         userController.setUserDTO(userDTO);
         userController.addOwner();
     }
+
+    private void authentication() {
+        User unAuthorizedUser = User.builder()
+                .contactInformation(new ContactInformation("12345", "abc@b.com"))
+                .name("name")
+                .password("password")
+                .pets(new HashSet<>())
+                .surname("surname")
+                .username("unAuthorizedUser")
+                .build();
+        UserService userService = new UserService();
+        userService.save(unAuthorizedUser);
+
+        TestingAuthenticationToken testingAuthenticationToken;
+        testingAuthenticationToken = new TestingAuthenticationToken(unAuthorizedUser.getUsername(),
+                unAuthorizedUser.getPassword()
+                , unAuthorizedUser.getRoles().iterator().next().getAuthority());
+
+        SecurityContextHolder.getContext().setAuthentication(testingAuthenticationToken);
+    }
+
+
 
 
 }

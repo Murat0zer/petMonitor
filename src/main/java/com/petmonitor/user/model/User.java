@@ -99,18 +99,4 @@ public class User implements UserDetails, Serializable {
         pet.setUser(null);
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", username='" + username + '\'' +
-                ", contactInformation=" + contactInformation.toString() +
-                ", password='" + password + '\'' +
-                ", roles=" + roles.toString() +
-                ", enabled=" + enabled +
-                '}';
-    }
-
 }

@@ -1,7 +1,10 @@
 package com.petmonitor.user.controller;
 
 
+import com.petmonitor.pet.PetService;
+import com.petmonitor.pet.model.Pet;
 import com.petmonitor.user.model.ContactInformation;
+import com.petmonitor.user.model.Role;
 import com.petmonitor.user.model.User;
 import com.petmonitor.user.model.UserDTO;
 import com.petmonitor.user.service.UserService;
@@ -29,14 +32,19 @@ import java.util.List;
 @NoArgsConstructor
 public class UserController implements Serializable {
 
-    UserDTO userDTO;
+    private UserDTO userDTO;
 
-    UserService userService;
+    private  UserService userService;
+
+    private PetService petService;
+
+    private Pet pet;
 
     @Inject
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PetService petService) {
         this.userService = userService;
         this.userDTO = UserDTO.builder().build();
+        this.petService = petService;
     }
 
     public void addOwner() {
@@ -79,5 +87,22 @@ public class UserController implements Serializable {
 
     public void updateUser() {
 
+        User user = User.builder()
+                .username(userDTO.getUsername())
+                .name(userDTO.getName())
+                .surname(userDTO.getSurname())
+                .password(userDTO.getPassword())
+                .contactInformation(new ContactInformation(userDTO.getPhoneNumber(), userDTO.getEmail()))
+                .pets(userDTO.getPets())
+                .build();
+        userService.save(user);
+    }
+
+    public void removePet(Pet pet) {
+        userService.removePet(pet);
+    }
+
+    public void addPet(Pet pet) {
+        userService.addPet(pet);
     }
 }
