@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.enterprise.context.ApplicationScoped;
+
 import javax.inject.Named;
 import javax.validation.*;
 import java.io.Serializable;
@@ -28,6 +29,8 @@ public class UserService implements UserDetailsService, Serializable {
 
     private UserDAO userDAO;
 
+    private User currentUser;
+
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
@@ -40,7 +43,7 @@ public class UserService implements UserDetailsService, Serializable {
     public User save(User user) {
 
         Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
-        if(!constraintViolations.isEmpty())
+        if (!constraintViolations.isEmpty())
             throw new ConstraintViolationException(constraintViolations.iterator().next().getMessage(), constraintViolations);
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -63,7 +66,6 @@ public class UserService implements UserDetailsService, Serializable {
         return userOptional.orElseThrow(() -> new UsernameNotFoundException("user not found by '" + username));
     }
 
-
     public User findUserById(long id) {
         return userDAO.get(id).orElseThrow(() -> new RuntimeException("user not found by id=" + id));
     }
@@ -81,30 +83,46 @@ public class UserService implements UserDetailsService, Serializable {
     }
 
     public void removePet(Pet pet) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User user = userDAO.findByUsername(authentication.getPrincipal().toString())
-                .orElseThrow(RuntimeException::new);
-        if(authentication.getAuthorities().contains(Role.ADMIN) || user.getId() == pet.getUser().getId()) {
-            user.removePet(pet);
-            userDAO.save(user);
-        }
-        else  {
+        this.loadCurrentUser();
+        if (checkAuthentication(pet)) {
+            currentUser.removePet(pet);
+            userDAO.save(currentUser);
+        } else {
             throw new AccessDeniedException("You have no authorize to do this");
         }
     }
 
     public void addPet(Pet pet) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        User user = userDAO.findByUsername(authentication.getPrincipal().toString())
-                .orElseThrow(RuntimeException::new);
-        if(authentication.getAuthorities().contains(Role.ADMIN) || user.getId() == pet.getUser().getId()) {
-            user.addPet(pet);
-            userDAO.save(user);
-        }
-        else  {
-            throw new AccessDeniedException("You have no authorize to do this");
-        }
+        this.loadCurrentUser();
+        currentUser.addPet(pet);
+        userDAO.save(currentUser);
+
+    }
+
+    public Set<User> searchUser(String keyword) {
+
+        return userDAO.findUsersByName(keyword);
+    }
+
+    private boolean checkAuthentication(Pet pet) {
+
+        this.loadCurrentUser();
+        return currentUser.getRoles().contains(Role.ADMIN) || currentUser.getId() == pet.getUser().getId();
+    }
+
+    public User loadCurrentUser() {
+
+        currentUser = userDAO.findByUsername(this.getCurrentUserName()).orElseThrow(RuntimeException::new);
+        return currentUser;
+
+    }
+
+    private String getCurrentUserName() {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
+        return principal instanceof UserDetails ? ((UserDetails) principal).getUsername() : principal.toString();
     }
 }

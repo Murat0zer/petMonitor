@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+>
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Search users</title>
+</h:head>
+
+<h:body>
+
+    <a href="#{request.contextPath}/welcome.xhtml">
+        <button
+                class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+
+            <span class="ui-button-text">Main Page ?</span>
+        </button>
+    </a>
+
+    <h:form>
+        <h:inputText id="search" value="#{userController.searchString}"/>
+        <h:commandButton value="Search by name" action="#{userController.findUsers()}"/>
+
+        <h:panelGroup rendered="#{fn:length(userController.users) > 0}">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Surname</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">E-mail</th>
+                    <th scope="col">Phone</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ui:repeat var="user" value="#{userController.users}" varStatus="status">
+                    <tr>
+                        <td>#{user.name}</td>
+                        <td>#{user.surname}</td>
+                        <td>#{user.username}</td>
+                        <td>#{user.contactInformation.email}</td>
+                        <td>#{user.contactInformation.phoneNumber}</td>
+                    </tr>
+                </ui:repeat>
+                </tbody>
+            </table>
+        </h:panelGroup>
+    </h:form>
+</h:body>
+</html>
+

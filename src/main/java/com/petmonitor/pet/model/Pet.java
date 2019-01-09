@@ -21,11 +21,11 @@ public class Pet implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private String species;
-    private String breed;
-    private String name;
-    private int age;
-    private String description;
+        private String species;
+        private String breed;
+        private String name;
+        private int age;
+        private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

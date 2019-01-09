@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Search pets</title>
+</h:head>
+
+<h:body>
+
+    <a href="#{request.contextPath}/welcome.xhtml">
+        <button
+                class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+
+            <span class="ui-button-text">Main Page ?</span>
+        </button>
+    </a>
+
+    <h:form>
+        <h:inputText id="search" value="#{petController.searchString}"/>
+        <h:commandButton value="Search by name" action="#{petController.findPets()}"/>
+
+        <h:panelGroup rendered="#{fn:length(petController.pets) > 0}">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Age</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Species</th>
+                    <th scope="col">Breed</th>
+                </tr>
+                </thead>
+                <tbody>
+                <ui:repeat var="pet" value="#{petController.pets}">
+                    <tr>
+                        <td>#{pet.name}</td>
+                        <td>#{pet.age}</td>
+                        <td>#{pet.description}</td>
+                        <td>#{pet.species}</td>
+                        <td>#{pet.breed}</td>
+                        <td>
+                            <h:commandButton value="Delete" action="#{userController.removePet(pet)}"/>
+                        </td>
+                    </tr>
+                </ui:repeat>
+                </tbody>
+            </table>
+        </h:panelGroup>
+    </h:form>
+</h:body>
+</html>

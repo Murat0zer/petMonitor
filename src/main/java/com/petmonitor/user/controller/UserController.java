@@ -15,6 +15,8 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
@@ -24,9 +26,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Named("userController")
-@SessionScoped
+@RequestScoped
 @Getter
 @Setter
 @NoArgsConstructor
@@ -40,11 +43,24 @@ public class UserController implements Serializable {
 
     private Pet pet;
 
+    private User currentUser;
+
+    private Set<User> users;
+
+    private String searchString;
+
     @Inject
     public UserController(UserService userService, PetService petService) {
         this.userService = userService;
         this.userDTO = UserDTO.builder().build();
+        this.pet = Pet.builder().build();
         this.petService = petService;
+
+    }
+
+    @PostConstruct
+    public void setup() {
+        this.currentUser = userService.loadCurrentUser();
     }
 
     public void addOwner() {
@@ -105,4 +121,13 @@ public class UserController implements Serializable {
     public void addPet(Pet pet) {
         userService.addPet(pet);
     }
+
+    public void addPet() {
+        userService.addPet(pet);
+    }
+
+    public void findUsers() {
+        users = userService.searchUser(searchString);
+    }
+
 }

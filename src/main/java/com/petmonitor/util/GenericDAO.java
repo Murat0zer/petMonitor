@@ -10,7 +10,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Optional;
 
 @Slf4j
-public class GenericDAO<T, ID extends Serializable> {
+public class GenericDAO<T, ID extends Serializable>  {
 
     protected EntityManager entityManager;
     private Class<T> entityBeanType;
@@ -80,7 +80,6 @@ public class GenericDAO<T, ID extends Serializable> {
             throw e;
         }
     }
-
 
     public void delete(T entity) {
 
