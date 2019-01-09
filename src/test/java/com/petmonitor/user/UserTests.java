@@ -2,6 +2,7 @@ package com.petmonitor.user;
 
 
 import com.petmonitor.pet.PetService;
+import com.petmonitor.pet.controller.PetController;
 import com.petmonitor.pet.model.Pet;
 import com.petmonitor.user.controller.UserController;
 import com.petmonitor.user.model.ContactInformation;
@@ -39,7 +40,7 @@ public class UserTests {
     private static Validator validator;
 
     private static Properties properties = new Properties();
-    private static UserController userController = new UserController(new UserService(), new PetService());
+    private static UserController userController = new UserController(new UserService(), new PetService(), new PetController());
     private User user;
     private UserDTO userDTO;
     private UserDAO userDAO = new UserDAO();

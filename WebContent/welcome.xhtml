@@ -3,10 +3,14 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions" xmlns:f="http://java.sun.com/jsf/core">
 <h:head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Welcome</title>
+
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{userController.loadCurrentUser}"/>
+    </f:metadata>
 </h:head>
 <h:body>
     <h2>Welcome
@@ -60,6 +64,11 @@
                         <td>#{pet.description}</td>
                         <td>#{pet.species}</td>
                         <td>#{pet.breed}</td>
+                        <td>
+                            <h:commandLink value="Update" action="#{petController.getPetDetailPage}">
+                                <f:param name="id" value="#{pet.id}"/>
+                            </h:commandLink>
+                        </td>
                         <td>
                             <h:commandButton value="Delete" action="#{userController.removePet(pet)}"/>
                         </td>

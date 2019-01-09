@@ -4,11 +4,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+      xmlns:sec="http://www.springframework.org/security/tags"
+>
 
 <h:head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Search pets</title>
+
 </h:head>
 
 <h:body>
@@ -44,8 +48,20 @@
                         <td>#{pet.description}</td>
                         <td>#{pet.species}</td>
                         <td>#{pet.breed}</td>
+
                         <td>
-                            <h:commandButton value="Delete" action="#{userController.removePet(pet)}"/>
+                            <h:commandButton
+                                    value="Delete"
+                                    rendered="#{userController.checkAuthentication(pet.user.id)}"
+                                    action="#{userController.removePet(pet)}"
+                            />
+                        </td>
+
+
+                        <td>
+                            <h:commandLink value="Detail" action="#{petController.getPetDetailPage}">
+                                <f:param name="id" value="#{pet.id}"/>
+                            </h:commandLink>
                         </td>
                     </tr>
                 </ui:repeat>

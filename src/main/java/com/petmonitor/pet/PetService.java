@@ -28,4 +28,8 @@ public class PetService implements Serializable {
         return petDAO.findPetsByName(keyword);
     }
 
+    public void updatePet(Pet pet) {
+
+        petDAO.update(pet);
+    }
 }

@@ -7,9 +7,9 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
             <property name="hibernate.connection.driver_class" value="com.mysql.cj.jdbc.Driver" />
-            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/jpa.schema" />
+            <property name="hibernate.connection.url" value="jdbc:mysql://localhost:3306/petMonitor" />
             <property name="hibernate.connection.username" value="root" />
-            <property name="hibernate.connection.password" value="mur4t123321" />
+            <property name="hibernate.connection.password" value="sqlPassword" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
             <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
             <property name="hibernate.show_sql" value="false" />

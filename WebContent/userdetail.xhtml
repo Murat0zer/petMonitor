@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+>
+<h:head>
+
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{userController.loadCurrentUser}"/>
+    </f:metadata>
+
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{userController.checkAuthentication(request.getParameter('id'))}"/>
+    </f:metadata>
+</h:head>
+<h:body>
+    <a href="#{request.contextPath}/welcome.xhtml">
+        <button
+                class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+
+            <span class="ui-button-text">Main Page ?</span>
+        </button>
+    </a>
+
+    <a href="#{request.contextPath}/user.xhtml">
+        <button
+                class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+
+            <span class="ui-button-text">Search again ?</span>
+        </button>
+    </a>
+    <h:form>
+        <h3>You can update user. </h3>
+        <h:panelGrid columns="3">
+
+            <h:outputLabel value="username:" for="username"/>
+            <h:inputText
+                    id="username"
+                    value="#{userController.currentUser.username}"
+                    a:value="#{userController.currentUser.username}"
+                    disabled="#{!userController.authentication}"
+
+
+            />
+            <h:message for="username" style="color:red"/>
+
+            <h:outputLabel value="Name:" for="name"/>
+            <h:inputText
+                    id="name"
+                    value="#{userController.currentUser.name}"
+                    a:value="#{userController.currentUser.name}"
+                    disabled="#{!userController.authentication}"
+            />
+            <h:message for="name" style="color:red"/>
+
+            <h:outputLabel value="Surname:" for="surname"/>
+            <h:inputText
+                    id="surname"
+                    value="#{userController.currentUser.surname}"
+                    a:value="#{userController.currentUser.surname}"
+                    disabled="#{!userController.authentication}"
+            />
+            <h:message for="surname" style="color:red"/>
+
+            <h:outputLabel value="Password:" for="password"/>
+            <h:inputSecret
+                    id="password"
+                    value="#{userController.currentUser.password}"
+                    a:value="#{userController.currentUser.password}"
+                    disabled="#{!userController.authentication}"
+            />
+            <h:message for="password" style="color:red"/>
+
+            <h:outputLabel value="Phone-number:" for="phoneNumber"/>
+            <h:inputText
+                    id="phoneNumber"
+                    value="#{userController.currentUser.contactInformation.phoneNumber}"
+                    a:value="#{userController.currentUser.contactInformation.phoneNumber}"
+                    disabled="#{!userController.authentication}"
+            />
+            <h:message for="phoneNumber" style="color:red"/>
+
+            <h:outputLabel value="E-mail:" for="email"/>
+            <h:inputText id="email"
+                         value="#{userController.currentUser.contactInformation.email}"
+                         a:value="#{userController.currentUser.contactInformation.email}"
+                         disabled="#{!userController.authentication}"
+            />
+
+            <h:message for="email" style="color:red"/>
+
+        </h:panelGrid>
+        <p>
+            <h:commandButton value="Update"
+                             rendered="#{userController.authentication}"
+                             action="#{userController.updateUser}"/>
+        </p>
+    </h:form>
+</h:body>
+</html>

@@ -40,8 +40,10 @@ public class MyServletContextListener implements ServletContextListener {
                 .surname("surname")
                 .contactInformation(new ContactInformation("123456", "abc@abc.com"))
                 .pets(new HashSet<>())
+                .roles(new HashSet<>())
                 .build();
 
+        user.getRoles().add(Role.ADMIN);
 
         int petCount = 5;
         for (int i = 0; i < petCount; i++) {

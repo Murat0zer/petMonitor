@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+>
+<h:head>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{petController.getPetById(request.getParameter('id'))}"/>
+    </f:metadata>
+
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{petController.checkAuthentication(request.getParameter('id'))}"/>
+    </f:metadata>
+</h:head>
+<h:body>
+    <a href="#{request.contextPath}/welcome.xhtml">
+        <button
+                class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+
+            <span class="ui-button-text">Main Page ?</span>
+        </button>
+    </a>
+
+    <a href="#{request.contextPath}/pet.xhtml">
+        <button
+                class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+
+            <span class="ui-button-text">Search again ?</span>
+        </button>
+    </a>
+    <h:form>
+        <h3> You can update your pet.</h3>
+        <h:panelGrid columns="3">
+
+            <h:outputLabel value="Name:" for="name"/>
+            <h:inputText
+                    disabled="#{!petController.authentication}"
+                    id="name"
+                    value="#{petController.pet.name}"
+                    a:value="#{petController.pet.name}"
+            />
+            <h:message for="name" style="color:red"/>
+
+            <h:outputLabel value="Age:" for="age"/>
+            <h:inputText
+                    id="age" value="#{petController.pet.age}"
+                    disabled="#{!petController.authentication}"
+                    a:value="#{petController.pet.age}"
+            />
+
+            <h:message for="age" style="color:red"/>
+
+
+            <h:outputLabel value="Species:" for="species"/>
+            <h:inputText
+                    id="species" value="#{petController.pet.species}"
+                    disabled="#{!petController.authentication}"
+                    a:value="#{petController.pet.species}"
+            />
+            <h:message for="species" style="color:red"/>
+
+            <h:outputLabel value="breed:" for="breed"/>
+            <h:inputText
+                    id="breed" value="#{petController.pet.breed}"
+                    disabled="#{!petController.authentication}"
+                    a:value="#{petController.pet.breed}"
+            />
+            <h:message for="breed" style="color:red"/>
+
+            <h:outputLabel value="Description:" for="description"/>
+            <h:inputTextarea
+                    id="description" value="#{petController.pet.description}"
+                    disabled="#{!petController.authentication}"
+                    a:value="#{petController.pet.description}"
+            />
+            <h:message for="description" style="color:red"/>
+        </h:panelGrid>
+        <p>
+            <h:commandButton rendered="#{petController.authentication}" value="Update"
+                             action="#{petController.updatePet()}"/>
+        </p>
+    </h:form>
+</h:body>
+</html>
